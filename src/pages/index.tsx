@@ -10,9 +10,9 @@ export default function IndexPage() {
   };
 
   return (
-    <section className=" bg-slate-200 flex justify-center items-center gap-2 mt-3 p-2">
+    <section className=" bg-slate-300 flex justify-end items-centerp-2 h-full">
       <form
-        className="bg-slate-100 p-2 w-[36%] leading-10 rounded-md"
+        className="bg-slate-100 p-2 w-[36%] leading-10 rounded-md fixed h-auto z-0 left-3 top-4"
         onSubmit={handleSubmit}
       >
         <h1 className="font-medium text-xl text-center">Caderno de Notas</h1>
@@ -49,6 +49,10 @@ export default function IndexPage() {
         </div>
       </form>
       <div className="flex justify-center gap-2 w-[60%] p-2 flex-wrap">
+        <Notes />
+        <Notes />
+        <Notes />
+        <Notes />
         <Notes />
         <Notes />
         <Notes />
