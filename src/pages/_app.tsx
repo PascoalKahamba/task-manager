@@ -1,19 +1,21 @@
-// Import styles of packages that you've installed.
-// All packages except `@mantine/hooks` require styles imports
-import "@mantine/core/styles.css";
+import { AppProps } from "next/app";
+import Head from "next/head";
 import "../global/styles.css";
 
-import type { AppProps } from "next/app";
-import { createTheme, MantineProvider } from "@mantine/core";
+export default function App(props: AppProps) {
+  const { Component, pageProps } = props;
 
-const theme = createTheme({
-  /** Put your mantine theme override here */
-});
-
-export default function App({ Component, pageProps }: AppProps) {
   return (
-    <MantineProvider theme={theme}>
+    <>
+      <Head>
+        <title>Page title</title>
+        <link rel="shortcut icon" href="/favicon.svg" />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width"
+        />
+      </Head>
       <Component {...pageProps} />
-    </MantineProvider>
+    </>
   );
 }

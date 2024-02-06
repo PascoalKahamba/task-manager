@@ -1,4 +1,6 @@
 import { FormEventHandler } from "react";
+import RadioButtons from "../components/radioButtons";
+import Notes from "../components/notes";
 
 type HandleSubmitProps = FormEventHandler<HTMLFormElement> | undefined;
 
@@ -10,7 +12,7 @@ export default function IndexPage() {
   return (
     <section className=" bg-slate-200 flex justify-center items-center gap-2 mt-3 p-2">
       <form
-        className="bg-slate-100 p-2 w-[45%] leading-10  rounded-md"
+        className="bg-slate-100 p-2 w-[36%] leading-10 rounded-md"
         onSubmit={handleSubmit}
       >
         <h1 className="font-medium text-xl text-center">Caderno de Notas</h1>
@@ -40,9 +42,17 @@ export default function IndexPage() {
         <button className="bg-blue-800 rounded-lg text-slate-200 text-lg p-2 w-full mt-2">
           Adicionar
         </button>
+        <div className="flex w-full justify-center items-center">
+          <RadioButtons title="Todos" />
+          <RadioButtons title="Prioridade" />
+          <RadioButtons title="Normal" />
+        </div>
       </form>
-      <div>
-        <p className="text-slate-200">Hello World</p>
+      <div className="flex justify-center gap-2 w-[60%] p-2 flex-wrap">
+        <Notes />
+        <Notes />
+        <Notes />
+        <Notes />
       </div>
     </section>
   );
