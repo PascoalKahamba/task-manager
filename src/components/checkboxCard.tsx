@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { UnstyledButton, Checkbox, Text } from "@mantine/core";
-import classes from "../global/checked.module.css";
+import classes from "../global/checkboxCard.module.css";
 
-export function CheckboxCard() {
+export default function CheckboxCard() {
   const [value, onChange] = useState(true);
 
   return (
