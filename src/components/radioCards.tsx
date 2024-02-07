@@ -22,7 +22,7 @@ export default function RadioCards({ title }: RadioCardsProps) {
         name="radio-buttons"
         inputProps={{ "aria-label": "A" }}
       />
-      <label>{title}</label>
+      <label className="text-sm">{title}</label>
     </div>
   );
 }
