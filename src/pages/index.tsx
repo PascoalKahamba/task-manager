@@ -1,13 +1,29 @@
-import { FormEventHandler } from "react";
+import { FormEventHandler, ChangeEventHandler } from "react";
 import RadioCards from "../components/radioCards";
 import Notes from "../components/notes";
+import { useState } from "react";
+import useFetch, { AnnotationsProps } from "../hooks/useFetch";
 
 type HandleSubmitProps = FormEventHandler<HTMLFormElement> | undefined;
+type HandleChangeProps =
+  | ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  | undefined;
 
 export default function IndexPage() {
+  const [form, setForm] = useState({ title: "", notes: "" });
+  const { annotations, error, loading } = useFetch<AnnotationsProps>(
+    "annotations",
+    "get"
+  );
+
+  const handleChange: HandleChangeProps = ({ target }) => {
+    setForm({ ...form, [target.id]: target.value });
+  };
   const handleSubmit: HandleSubmitProps = (event) => {
     event.preventDefault();
   };
+
+  console.log(annotations);
 
   return (
     <section className=" bg-slate-300 flex justify-end items-center p-2 h-full">
@@ -24,6 +40,8 @@ export default function IndexPage() {
               <input
                 type="text"
                 id="title"
+                value={form.title}
+                onChange={handleChange}
                 placeholder="Titulo da Anotação"
                 className="p-2 rounded w-full border-none mb-2"
               />
@@ -36,6 +54,8 @@ export default function IndexPage() {
               <textarea
                 id="notes"
                 placeholder="Digite as anotações"
+                value={form.notes}
+                onChange={handleChange}
                 className="p-2 rounded w-full border-none resize-none"
               />
             </p>

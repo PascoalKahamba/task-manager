@@ -19,25 +19,24 @@ export default function useFetch<T>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const { _id, notes, priority, title } = body as AnnotationsProps;
-
   useEffect(() => {
     async function managenerAnnotations() {
       try {
         setLoading(true);
         if (method === "get") {
-          const data = (await api.get<T[]>(url)) as unknown as T[];
-          setAnnotations(data);
+          const annotationsData = await api.get<T[]>(url);
+          setAnnotations(annotationsData.data);
         } else if (method === "post") {
-          const data = (await api.post<T>(url, {
+          const { notes, priority, title } = body as AnnotationsProps;
+          const annotationsData = await api.post<T>(url, {
             title,
             notes,
             priority,
-          })) as unknown as T;
-          setAnnotations(data);
+          });
+          setAnnotations(annotationsData.data);
         } else if (method === "delete") {
-          const data = (await api.delete<T>(url)) as unknown as T;
-          setAnnotations(data);
+          const annotationsData = await api.delete<T>(url);
+          setAnnotations(annotationsData.data);
         }
       } catch (err) {
         setError(true);
@@ -48,6 +47,7 @@ export default function useFetch<T>(
     }
 
     managenerAnnotations();
-  }, [url, method, body, title, notes, priority]);
-  return {};
+  }, [url, method, body]);
+
+  return { annotations, loading, error };
 }
