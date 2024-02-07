@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Radio from "@mui/material/Radio";
 
-interface RadioButtonsProps {
+interface RadioCardsProps {
   title: string;
 }
 
-export default function RadioButtons({ title }: RadioButtonsProps) {
+export default function RadioCards({ title }: RadioCardsProps) {
   const [selectedValue, setSelectedValue] = useState("a");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
