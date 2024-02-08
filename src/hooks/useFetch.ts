@@ -15,7 +15,7 @@ export default function useFetch<T>(
   method: MethodProps,
   body?: AnnotationsProps | T
 ) {
-  const [annotations, setAnnotations] = useState<T | T[]>([]);
+  const [notes, setNotes] = useState<T | T[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -25,7 +25,7 @@ export default function useFetch<T>(
         setLoading(true);
         if (method === "get") {
           const annotationsData = await api.get<T[]>(url);
-          setAnnotations(annotationsData.data);
+          setNotes(annotationsData.data);
         } else if (method === "post") {
           const { notes, priority, title } = body as AnnotationsProps;
           const annotationsData = await api.post<T>(url, {
@@ -33,10 +33,10 @@ export default function useFetch<T>(
             notes,
             priority,
           });
-          setAnnotations(annotationsData.data);
+          setNotes(annotationsData.data);
         } else if (method === "delete") {
           const annotationsData = await api.delete<T>(url);
-          setAnnotations(annotationsData.data);
+          setNotes(annotationsData.data);
         }
       } catch (err) {
         setError(true);
@@ -49,5 +49,5 @@ export default function useFetch<T>(
     managenerAnnotations();
   }, [url, method, body]);
 
-  return { annotations, loading, error };
+  return { notes, loading, error };
 }

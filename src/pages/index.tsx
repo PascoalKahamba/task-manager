@@ -11,11 +11,12 @@ type HandleChangeProps =
 
 export default function IndexPage() {
   const [form, setForm] = useState({ title: "", notes: "" });
-  const { annotations, error, loading } = useFetch<AnnotationsProps>(
+  const { notes, error, loading } = useFetch<AnnotationsProps>(
     "annotations",
     "get"
   );
 
+  const annotations: AnnotationsProps[] = notes as AnnotationsProps[];
   const handleChange: HandleChangeProps = ({ target }) => {
     setForm({ ...form, [target.id]: target.value });
   };
@@ -26,7 +27,7 @@ export default function IndexPage() {
   console.log(annotations);
 
   return (
-    <section className=" bg-slate-300 flex justify-end items-center p-2 h-full">
+    <section className=" bg-slate-300 flex justify-end items-center p-2 h-[100vh]">
       <div className="w-[40%] absolute">
         <form
           className="bg-slate-100 p-2 w-[36%] leading-10 rounded-md fixed h-auto z-0 left-3 top-4"
@@ -70,15 +71,11 @@ export default function IndexPage() {
           </div>
         </form>
       </div>
+
       <div className="flex justify-center gap-2 w-[60%] p-2 flex-wrap">
-        <Notes />
-        <Notes />
-        <Notes />
-        <Notes />
-        <Notes />
-        <Notes />
-        <Notes />
-        <Notes />
+        {annotations.map(({ _id, notes, title }) => (
+          <Notes key={_id} notes={notes} title={title} />
+        ))}
       </div>
     </section>
   );
