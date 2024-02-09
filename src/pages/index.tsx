@@ -3,26 +3,54 @@ import RadioCards from "../components/radioCards";
 import Notes from "../components/notes";
 import { useState } from "react";
 import useFetch, { AnnotationsProps } from "../hooks/useFetch";
+import SkeletonColor from "../components/skeletonColor";
+import {
+  GetServerSideProps,
+  GetStaticProps,
+  InferGetServerSidePropsType,
+} from "next";
 
 type HandleSubmitProps = FormEventHandler<HTMLFormElement> | undefined;
 type HandleChangeProps =
   | ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
   | undefined;
 
-export default function IndexPage() {
+interface IndexPageProps {
+  inicialAnnotations: AnnotationsProps[];
+}
+
+function bothFieldsAreEmpty(title: string, notes: string) {
+  if (!title || !notes) {
+    return true;
+  }
+  return false;
+}
+
+export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
   const [form, setForm] = useState({ title: "", notes: "" });
-  const { notes, error, loading } = useFetch<AnnotationsProps>(
+  const [getNotes, getError, getLoading] = useFetch<AnnotationsProps>(
     "annotations",
     "get"
   );
 
-  const annotations: AnnotationsProps[] = notes as AnnotationsProps[];
+  const [createNotes, createError, createLoading] = useFetch<AnnotationsProps>(
+    "annotations",
+    "post"
+  );
+
+  const annotations: AnnotationsProps[] = getNotes as AnnotationsProps[];
   const handleChange: HandleChangeProps = ({ target }) => {
     setForm({ ...form, [target.id]: target.value });
   };
   const handleSubmit: HandleSubmitProps = (event) => {
     event.preventDefault();
+
+    alert("hello");
+
+    setForm({ title: "", notes: "" });
   };
+
+  const errorFields = bothFieldsAreEmpty(form.title, form.notes);
 
   console.log(annotations);
 
@@ -61,7 +89,14 @@ export default function IndexPage() {
               />
             </p>
           </div>
-          <button className="bg-blue-800 rounded-lg text-slate-200 text-lg p-2 w-full mt-2">
+          <button
+            className={`${
+              errorFields
+                ? "bg-blue-200 cursor-auto"
+                : "bg-blue-800 cursor-pointer"
+            } rounded-lg text-slate-200 text-lg p-2 w-full mt-2 transition-all`}
+            disabled={errorFields}
+          >
             Adicionar
           </button>
           <div className="flex w-full justify-center items-center">
@@ -73,10 +108,24 @@ export default function IndexPage() {
       </div>
 
       <div className="flex justify-center gap-2 w-[60%] p-2 flex-wrap">
-        {annotations.map(({ _id, notes, title }) => (
-          <Notes key={_id} notes={notes} title={title} />
-        ))}
+        {getLoading ? (
+          <SkeletonColor />
+        ) : (
+          annotations.map(({ _id, notes, title }) => (
+            <Notes key={_id} notes={notes} title={title} />
+          ))
+        )}
       </div>
     </section>
   );
 }
+
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   const annotationsData = await fetch("http://localhost:3001/annotations");
+//   const InicialAnnotations =
+//     (await annotationsData.json()) as AnnotationsProps[];
+//   console.log("Scheletor", InicialAnnotations);
+//   return {
+//     props: { InicialAnnotations },
+//   };
+// };

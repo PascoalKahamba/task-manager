@@ -8,12 +8,14 @@ export interface AnnotationsProps {
   priority: boolean;
 }
 
+type BodyProps = Omit<AnnotationsProps, "_id">;
+
 type MethodProps = "get" | "post" | "delete";
 
 export default function useFetch<T>(
   url: string,
   method: MethodProps,
-  body?: AnnotationsProps | T
+  body?: BodyProps | T
 ) {
   const [notes, setNotes] = useState<T | T[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,5 +51,5 @@ export default function useFetch<T>(
     managenerAnnotations();
   }, [url, method, body]);
 
-  return { notes, loading, error };
+  return [notes, loading, error];
 }
