@@ -1,23 +1,20 @@
-import * as React from "react";
 import Skeleton from "@mui/material/Skeleton";
-import Box from "@mui/material/Box";
-import useFetch, { AnnotationsProps } from "../hooks/useFetch";
+import { AnnotationsProps } from "../hooks/useFetch";
 
-// interface SkeletonColorProps {
-//   annotations: AnnotationsProps[];
-// }
+interface SkeletonColorProps {
+  annotations: AnnotationsProps[];
+}
 
-const annotations = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-export default function SkeletonColor() {
+export default function SkeletonColor({ annotations }: SkeletonColorProps) {
+  console.log("Skeleton", annotations);
   return (
     <>
-      {annotations.map((_, index) => (
+      {annotations.map((annotation) => (
         <Skeleton
           className="bg-slate-100 leading-10 rounded-md p-2 flex-1 basis-52"
           variant="rectangular"
           width={208}
-          key={index}
+          key={annotation._id}
           height={118}
         />
       ))}

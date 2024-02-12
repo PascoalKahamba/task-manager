@@ -2,15 +2,10 @@ import { FormEventHandler, ChangeEventHandler } from "react";
 import RadioCards from "../components/radioCards";
 import Notes from "../components/notes";
 import { useState, useEffect } from "react";
-import useFetch, { AnnotationsProps, MethodProps } from "../hooks/useFetch";
+import useFetch, { AnnotationsProps } from "../hooks/useFetch";
 import SkeletonColor from "../components/skeletonColor";
-import {
-  GetServerSideProps,
-  GetStaticProps,
-  InferGetServerSidePropsType,
-} from "next";
+import { GetServerSideProps } from "next";
 import { api } from "../server/axios";
-
 type HandleSubmitProps = FormEventHandler<HTMLFormElement> | undefined;
 type HandleChangeProps =
   | ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
@@ -53,8 +48,6 @@ export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
   };
 
   const errorFields = bothFieldsAreEmpty(form.title, form.notes);
-
-  console.log(annotations);
 
   return (
     <section className=" bg-slate-300 flex justify-end items-center p-2 h-lvh">
@@ -111,7 +104,7 @@ export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
 
       <div className="flex justify-center gap-2 w-[60%] p-2 flex-wrap">
         {loading ? (
-          <SkeletonColor />
+          <SkeletonColor annotations={inicialAnnotations} />
         ) : error ? (
           <p className="font-semibold  ">
             Algo deu errado na sua internet verifique e tente novamente.
@@ -126,12 +119,11 @@ export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
   );
 }
 
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   const annotationsData = await fetch("http://localhost:3001/annotations");
-//   const InicialAnnotations =
-//     (await annotationsData.json()) as AnnotationsProps[];
-//   console.log("Scheletor", InicialAnnotations);
-//   return {
-//     props: { InicialAnnotations },
-//   };
-// };
+export const getServerSideProps: GetServerSideProps = async () => {
+  const annotationsData = await fetch("http://localhost:3001/annotations");
+  const inicialAnnotations =
+    (await annotationsData.json()) as AnnotationsProps[];
+  return {
+    props: { inicialAnnotations },
+  };
+};
