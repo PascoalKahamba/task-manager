@@ -1,14 +1,15 @@
 import { FormEventHandler, ChangeEventHandler } from "react";
 import RadioCards from "../components/radioCards";
 import Notes from "../components/notes";
-import { useState } from "react";
-import useFetch, { AnnotationsProps } from "../hooks/useFetch";
+import { useState, useEffect } from "react";
+import useFetch, { AnnotationsProps, MethodProps } from "../hooks/useFetch";
 import SkeletonColor from "../components/skeletonColor";
 import {
   GetServerSideProps,
   GetStaticProps,
   InferGetServerSidePropsType,
 } from "next";
+import { api } from "../server/axios";
 
 type HandleSubmitProps = FormEventHandler<HTMLFormElement> | undefined;
 type HandleChangeProps =
@@ -28,26 +29,27 @@ function bothFieldsAreEmpty(title: string, notes: string) {
 
 export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
   const [form, setForm] = useState({ title: "", notes: "" });
-  const [getNotes, getError, getLoading] = useFetch<AnnotationsProps>(
-    "annotations",
-    "get"
-  );
+  const { notes, loading, error, request } = useFetch<AnnotationsProps>();
 
-  const [createNotes, createError, createLoading] = useFetch<AnnotationsProps>(
-    "annotations",
-    "post"
-  );
+  useEffect(() => {
+    request("annotations", "get");
+  }, [request]);
 
-  const annotations: AnnotationsProps[] = getNotes as AnnotationsProps[];
+  const annotations: AnnotationsProps[] = notes as AnnotationsProps[];
   const handleChange: HandleChangeProps = ({ target }) => {
     setForm({ ...form, [target.id]: target.value });
   };
-  const handleSubmit: HandleSubmitProps = (event) => {
+
+  const handleSubmit: HandleSubmitProps = async (event) => {
     event.preventDefault();
-
-    alert("hello");
-
+    const newNotes = await request("annotations", "post", {
+      title: form.title,
+      notes: form.notes,
+      priority: false,
+    });
+    console.log(newNotes);
     setForm({ title: "", notes: "" });
+    request("annotations", "get");
   };
 
   const errorFields = bothFieldsAreEmpty(form.title, form.notes);
@@ -55,7 +57,7 @@ export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
   console.log(annotations);
 
   return (
-    <section className=" bg-slate-300 flex justify-end items-center p-2 h-[100vh]">
+    <section className=" bg-slate-300 flex justify-end items-center p-2 h-lvh">
       <div className="w-[40%] absolute">
         <form
           className="bg-slate-100 p-2 w-[36%] leading-10 rounded-md fixed h-auto z-0 left-3 top-4"
@@ -108,8 +110,12 @@ export default function IndexPage({ inicialAnnotations }: IndexPageProps) {
       </div>
 
       <div className="flex justify-center gap-2 w-[60%] p-2 flex-wrap">
-        {getLoading ? (
+        {loading ? (
           <SkeletonColor />
+        ) : error ? (
+          <p className="font-semibold  ">
+            Algo deu errado na sua internet verifique e tente novamente.
+          </p>
         ) : (
           annotations.map(({ _id, notes, title }) => (
             <Notes key={_id} notes={notes} title={title} />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { api } from "../server/axios";
 
 export interface AnnotationsProps {
@@ -10,46 +10,56 @@ export interface AnnotationsProps {
 
 type BodyProps = Omit<AnnotationsProps, "_id">;
 
-type MethodProps = "get" | "post" | "delete";
+export type MethodProps = "invalid" | "get" | "post" | "delete" | "change";
 
-export default function useFetch<T>(
-  url: string,
-  method: MethodProps,
-  body?: BodyProps | T
-) {
+export default function useFetch<T>() {
   const [notes, setNotes] = useState<T | T[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    async function managenerAnnotations() {
+  const request = useCallback(
+    async (url: string, method: MethodProps, body?: BodyProps) => {
+      let response;
+      let json;
       try {
+        setError(false);
         setLoading(true);
         if (method === "get") {
-          const annotationsData = await api.get<T[]>(url);
-          setNotes(annotationsData.data);
-        } else if (method === "post") {
+          const response = await api.get<T[]>(url);
+          json = response.data;
+          if (response.status !== 200) throw new SyntaxError("Error internet");
+        }
+        if (method === "post") {
           const { notes, priority, title } = body as AnnotationsProps;
-          const annotationsData = await api.post<T>(url, {
+          const response = await api.post<T>(url, {
             title,
             notes,
             priority,
           });
-          setNotes(annotationsData.data);
-        } else if (method === "delete") {
-          const annotationsData = await api.delete<T>(url);
-          setNotes(annotationsData.data);
+          json = response.data;
+
+          if (response.status !== 200) throw new SyntaxError("Error internet");
+        }
+        if (method === "delete") {
+          const response = await api.delete<T>(url);
+          json = response.data;
+          if (response.status !== 200) throw new SyntaxError("Error internet");
         }
       } catch (err) {
         setError(true);
       } finally {
-        setError(false);
         setLoading(false);
+        if (json) setNotes(json);
+        return { response, json };
       }
-    }
+    },
+    []
+  );
 
-    managenerAnnotations();
-  }, [url, method, body]);
-
-  return [notes, loading, error];
+  return {
+    notes,
+    loading,
+    error,
+    request,
+  };
 }
